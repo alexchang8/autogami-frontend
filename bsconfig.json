@@ -1,0 +1,25 @@
+
+{
+  "name": "react-hooks-template",
+  "reason": {
+    "react-jsx": 3
+  },
+  "sources": {
+    "dir" : "src",
+    "subdirs" : true
+  },
+  "package-specs": [{
+    "module": "commonjs",
+    "in-source": true
+  }],
+  "suffix": ".bs.js",
+  "namespace": true,
+  "bs-dependencies": [
+    "reason-react"
+  ],
+  "refmt": 3,
+  "ppx-flags": [
+    "./_opam/bin/ppx_bsx",
+    "./node_modules/bs-platform/lib/bsppx.exe -bs-jsx 3"
+  ]
+}
