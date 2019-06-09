@@ -1,5 +1,6 @@
 type context = {
-  mutable fillStyle: string
+  mutable fillStyle: string;
+  mutable strokeStyle: string
 } [@@bs.deriving abstract]
 type canvas
 
@@ -26,3 +27,4 @@ external clearRect : context -> int -> int -> int -> int -> unit = "" [@@bs.send
 external lineTo : context -> int -> int -> unit = "" [@@bs.send]
 
 let setFillStyle = fillStyleSet
+let setStrokeStyle = strokeStyleSet

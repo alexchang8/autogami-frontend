@@ -1,8 +1,36 @@
 open Dom_html
 
-let make ~onMouseDown ~onMouseMove ~onMouseUp ~nodes ~edges ~radius ~width ~height =
+let make ~onMouseDown ~onMouseMove ~onMouseUp ~nodes ~edges ~radius ~width ~height ~hNodes ~grid ~keyHandler =
   let canvas_ref = React.useRef Js.Nullable.null in
 
+
+  let draw_grid ctx =
+    match grid with
+    | None -> ()
+    | Some(grid) -> begin
+      setStrokeStyle ctx "#6495ED";
+      beginPath ctx;
+      let dx = width / grid in
+      let dy = height / grid in
+      let rec draw_line_vert n =
+        if n = 0 then () else
+        let x = n * dx in
+        moveTo ctx x 0;
+        lineTo ctx x height;
+        draw_line_vert (n-1)
+      in
+      let rec draw_line_horiz n =
+        if n = 0 then () else
+        let y = n * dy in
+        moveTo ctx 0 y;
+        lineTo ctx width y;
+        draw_line_horiz (n-1)
+      in
+      draw_line_vert (grid - 1);
+      draw_line_horiz (grid - 1);
+      stroke ctx
+    end
+  in
 
   let draw ctx =
     let draw_edge nodes (id1,id2) =
@@ -19,13 +47,18 @@ let make ~onMouseDown ~onMouseMove ~onMouseUp ~nodes ~edges ~radius ~width ~heig
       arc ctx x y radius 0. (Js.Math._PI *. 2.)
     in
     clearRect ctx 0 0 width height;
+    draw_grid ctx;
     beginPath ctx;
+    setStrokeStyle ctx "#000000";
     draw_edges nodes edges;
     beginPath ctx;
-    setFillStyle ctx "orange";
+    setFillStyle ctx "#FF7F50";
     List.iter draw_node nodes;
     fill ctx;
-
+    beginPath ctx;
+    setFillStyle ctx "#6495ED";
+    List.iter draw_node hNodes;
+    fill ctx
   in
 
   React.useEffect (fun () ->
@@ -36,12 +69,15 @@ let make ~onMouseDown ~onMouseMove ~onMouseUp ~nodes ~edges ~radius ~width ~heig
 
 
   [%bsx "
-    <canvas ref = "(ReactDOMRe.Ref.domRef canvas_ref)"
+    <canvas
+      tabIndex = "0"
+      onKeyDown = "keyHandler"
+      ref = "(ReactDOMRe.Ref.domRef canvas_ref)"
       onMouseDown = "onMouseDown"
       onMouseMove = "onMouseMove"
       onMouseUp = "onMouseUp"
       height = "(string_of_int height)"
       width = "(string_of_int width)"
-      style = "(ReactDOMRe.Style.make ~border:"1px solid #000000" ())"
+      style = "(ReactDOMRe.Style.make ~border:"1px solid #000000" ~outline:"none" ())"
       />
   "] [@@react.component]

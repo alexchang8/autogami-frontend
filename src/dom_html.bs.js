@@ -17,6 +17,12 @@ function setFillStyle(prim, prim$1) {
   return /* () */0;
 }
 
+function setStrokeStyle(prim, prim$1) {
+  prim.strokeStyle = prim$1;
+  return /* () */0;
+}
+
 exports.domToCanvas = domToCanvas;
 exports.setFillStyle = setFillStyle;
+exports.setStrokeStyle = setStrokeStyle;
 /* No side effect */

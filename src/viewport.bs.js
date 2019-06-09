@@ -3,6 +3,7 @@
 
 var List = require("bs-platform/lib/js/list.js");
 var React = require("react");
+var Caml_int32 = require("bs-platform/lib/js/caml_int32.js");
 var Caml_option = require("bs-platform/lib/js/caml_option.js");
 var Dom_html$ReactHooksTemplate = require("./dom_html.bs.js");
 
@@ -15,7 +16,53 @@ function Viewport(Props) {
   var radius = Props.radius;
   var width = Props.width;
   var height = Props.height;
+  var hNodes = Props.hNodes;
+  var grid = Props.grid;
+  var keyHandler = Props.keyHandler;
   var canvas_ref = React.useRef(null);
+  var draw_grid = function (ctx) {
+    if (grid !== undefined) {
+      var grid$1 = grid;
+      Dom_html$ReactHooksTemplate.setStrokeStyle(ctx, "#6495ED");
+      ctx.beginPath();
+      var dx = Caml_int32.div(width, grid$1);
+      var dy = Caml_int32.div(height, grid$1);
+      var draw_line_vert = function (_n) {
+        while(true) {
+          var n = _n;
+          if (n === 0) {
+            return /* () */0;
+          } else {
+            var x = Caml_int32.imul(n, dx);
+            ctx.moveTo(x, 0);
+            ctx.lineTo(x, height);
+            _n = n - 1 | 0;
+            continue ;
+          }
+        };
+      };
+      var draw_line_horiz = function (_n) {
+        while(true) {
+          var n = _n;
+          if (n === 0) {
+            return /* () */0;
+          } else {
+            var y = Caml_int32.imul(n, dy);
+            ctx.moveTo(0, y);
+            ctx.lineTo(width, y);
+            _n = n - 1 | 0;
+            continue ;
+          }
+        };
+      };
+      draw_line_vert(grid$1 - 1 | 0);
+      draw_line_horiz(grid$1 - 1 | 0);
+      ctx.stroke();
+      return /* () */0;
+    } else {
+      return /* () */0;
+    }
+  };
   var draw = function (ctx) {
     var draw_node = function (param) {
       var match = param[1];
@@ -26,7 +73,9 @@ function Viewport(Props) {
       return /* () */0;
     };
     ctx.clearRect(0, 0, width, height);
+    draw_grid(ctx);
     ctx.beginPath();
+    Dom_html$ReactHooksTemplate.setStrokeStyle(ctx, "#000000");
     List.iter((function (param) {
             var nodes$1 = nodes;
             var param$1 = param;
@@ -38,8 +87,12 @@ function Viewport(Props) {
             return /* () */0;
           }), edges);
     ctx.beginPath();
-    Dom_html$ReactHooksTemplate.setFillStyle(ctx, "orange");
+    Dom_html$ReactHooksTemplate.setFillStyle(ctx, "#FF7F50");
     List.iter(draw_node, nodes);
+    ctx.fill();
+    ctx.beginPath();
+    Dom_html$ReactHooksTemplate.setFillStyle(ctx, "#6495ED");
+    List.iter(draw_node, hNodes);
     ctx.fill();
     return /* () */0;
   };
@@ -51,10 +104,13 @@ function Viewport(Props) {
   return React.createElement("canvas", {
               ref: canvas_ref,
               style: {
-                border: "1px solid #000000"
+                border: "1px solid #000000",
+                outline: "none"
               },
+              tabIndex: 0,
               height: String(height),
               width: String(width),
+              onKeyDown: keyHandler,
               onMouseDown: onMouseDown,
               onMouseMove: onMouseMove,
               onMouseUp: onMouseUp
