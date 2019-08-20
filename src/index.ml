@@ -1,1 +1,1 @@
-let () = ReactDOMRe.renderToElementWithId [%bsx "<Canvas/>"] "root"
+let () = ReactDOMRe.renderToElementWithId [%bsx "<Upload/>"] "root"
